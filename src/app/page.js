@@ -1,95 +1,100 @@
+'use client'
+
+import { useState, useEffect } from 'react';
+
 import Image from 'next/image'
 import styles from './page.module.css'
 
-export default function Home() {
+
+
+
+
+const GridComponent = ({ onRemove }) => {
+  const colSize = 5;
+  const rows = 5;
+  const [columnSize, setColumnSize] = useState(colSize);
+  const [rowSize, setRowSize] = useState(rows);
+  
+  const [hoveredCell, setHoveredCell] = useState(null);
+
+  const gridStyle = {
+    gridTemplateColumns: `repeat(${columnSize}, 1fr)`,
+    gridTemplateRows: `repeat(${rowSize}, 1fr)`
+  };
+
+  const handleMouseEnter = (index) => {
+    setHoveredCell(index);
+    console.log(index)
+  };
+  
+  const getIndex = (index) => {
+    console.log('Index:', index);
+  }
+
+  const handleMouseLeave = () => {
+    setHoveredCell(null);
+  };
+
+  const gridElements = [];
+
+  // Loop to generate a 4x4 grid
+  for (let row = 0; row < rowSize; row++) {
+    for (let col = 0; col < columnSize; col++) {
+      // Calculate a unique key for each grid element
+      const key = row * columnSize + col;
+      const cells = {
+        backgroundColor: hoveredCell === key ? "orangered" : ""
+      };
+
+      // Create a <div> element for each cell in the grid
+      const divElement = (
+        <div
+          key={key}
+          className={styles.gridCell}
+          onMouseEnter={() => handleMouseEnter(key)}
+          onMouseLeave={handleMouseLeave}
+          onClick={getIndex}
+          style={cells}
+        ></div>
+      );
+
+      // Push the <div> element into the array
+      gridElements.push(divElement);
+    }
+  }
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+    <>
+    <div className={styles.gridContainer} style={gridStyle}>
+      {gridElements}
+    </div>
+    {/* <button onClick={onRemove}>Remove Grid</button> */}
+    </>
+  );
+};
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+export default function App() {
+  const [showGrid, setShowGrid] = useState(true);
+  
+  const toggleGrid = () => {
+    setShowGrid(!showGrid);
+  };
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+  const removeGrid = () => {
+    setShowGrid(false);
+  };
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
+  const newGrid = () => {
+    setShowGrid(true);
+    
+  };
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+  return (
+    <>
+      <button className={styles.btn} onClick={newGrid}>New Grid</button>
+      <button className={styles.btn} onClick={toggleGrid}>Toggle Grid</button>
+      {showGrid && <GridComponent  onRemove={removeGrid} />}
+    </>
+  );
 }
